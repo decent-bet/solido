@@ -174,6 +174,18 @@ const logs = await energy.logTransfer(filterOptions);
 
  ```
  
- ### Connex specific utilities
+ ### Connex specific utilities - RxJS operators
+ 
+ #### blockConfirmationUntil
+ 
+ Waits for a block confirmation. Useful for waiting a confirmation and then request the transaction log.
+ 
+ ```typescript
+    const response: any = await energy.logTransfer();
+    const blockConfirmation = blockConfirmationUntil(response.txid);
+    const subscription = blockConfirmation.pipe(switchMap(_ => response)).subscribe((log: any) => {
+      // ... code goes here
+    });
+ ```
  
  
