@@ -3,7 +3,6 @@ import { module } from './index';
 import { EnergyTokenContract } from './EnergyContract';
 import { Read } from '../src/decorators/Read';
 import { IMethodOrEventCall } from '../src/types';
-import { AbiUtils } from '../src/Utils';
 import { ThorifySettings } from '../src/providers/thorify/ThorifySettings';
 import { Write } from '../src/decorators';
 const Web3 = require('web3');
@@ -93,52 +92,30 @@ describe('ThorifyProvider', () => {
                 callMethod: jest.fn(i => {})
             };
             const options: IMethodOrEventCall = {};
-            const descriptor = Read(options);
-            const original = {};
-            const pd = descriptor(null, 'balanceOf', original);
-
-            const promise = await pd.value.bind(obj)();
+            Read(options)(obj, 'balanceOf');
             expect(obj.callMethod.mock.calls.length).toBe(1);
         });
 
 
         it('should create a Write() and return a Promise', async () => {
-            const gasMock = jest.fn();
-            const requestMock = jest.fn();
-            const clauseMock = jest.fn();
             const signerMock = {
                 requestSigning: jest.fn()
             };
             // Mock
             const obj = {
                 prepareSigning: jest.fn(() => {
-                    return Promise.resolve(signerMock)
+                    return Promise.resolve(signerMock);
                 }),
-                connex: {
-                    vendor: {
-                        sign: jest.fn(() => {
-                            return {
-                                signer: signerMock,
-                                gas: gasMock,
-                                request: requestMock
-                            };
-                        })
-                    }
-                },
-                getMethod: jest.fn(i => {
+                getMethod: jest.fn(() => {
                     return {
-                        asClause: clauseMock
-                    };
-                })
+                        call: jest.fn(),
+                        encodeABI: jest.fn(),
+                    }
+                }),
             };
-            const descriptor = Write();
-            const original = {};
-            const pd = descriptor(null, 'transfer', original);
-  
-            await pd.value.bind(obj)();
-  
+            Write()(obj, 'transfer');
             expect(obj.getMethod.mock.calls.length).toBe(1);
-            expect(signerMock.requestSigning.mock.calls.length).toBe(1);
+            expect(obj.prepareSigning.mock.calls.length).toBe(1);
         });
   
     });
