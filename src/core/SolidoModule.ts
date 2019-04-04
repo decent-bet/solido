@@ -36,7 +36,7 @@ export class ContractCollection {
         SolidoContract &
         SolidoProvider;
     }
-    getDynamicContract(key: string): SolidoContract {
+    getDynamicContract(key: string): SolidoContract & SolidoProvider {
         return this.coll[key];
     }
 }
