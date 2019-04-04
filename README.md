@@ -128,3 +128,64 @@ token.onReady<ThorifySettings>({
     console.log(events);
 ```
   
+  
+  ### Dynamic Contract Entities
+  
+  To let Solido generate Read and Write methods, set `enableDynamicStubs: true` in contract mapping entry and use `GetDynamicContract` to get the contract. The generated stubes are available in `contract.methods`.
+  
+  ```typescript
+  export const module = new SolidoModule([
+    {
+        name: 'ThorifyToken',
+        import: EnergyContractImport,
+        enableDynamicStubs: true
+    }
+], ThorifyPlugin);
+
+const contracts = module.bindContracts();
+
+const token = contracts.getDynamicContract('ThorifyToken');
+
+const balance = await token.methods.balanceOf();
+  
+  ```
+  
+  
+  ### Topic Queries
+  
+ You can query any log event call with a fluent topic query. A contract event signatures are define in `contract.topics`.
+ 
+ ```typescript
+ // build query
+let topicQuery = new ConnexSolidoTopic();
+topicQuery
+  .topic(0, energy.topics.Transfer.signature);
+
+// set filter options
+const filterOptions: EventFilter<any> = {
+  pageOptions: {
+    limit: 100,
+    offset: 0
+  },
+  topics: topicQuery
+};
+
+const logs = await energy.logTransfer(filterOptions);
+
+ ```
+ 
+ ### Connex specific utilities - RxJS operators
+ 
+ #### blockConfirmationUntil
+ 
+ Waits for a block confirmation. Useful for waiting a confirmation and then request the transaction log.
+ 
+ ```typescript
+    const response: any = await energy.logTransfer();
+    const blockConfirmation = blockConfirmationUntil(response.txid);
+    const subscription = blockConfirmation.pipe(switchMap(_ => response)).subscribe((log: any) => {
+      // ... code goes here
+    });
+ ```
+ 
+ 
