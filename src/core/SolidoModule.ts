@@ -14,7 +14,7 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
 export interface ContractProviderMapping {
     name: string;
     import: ContractImport;
-    entity: any;
+    entity?: any;
     provider?: any;
     enableDynamicStubs?: boolean;
 }
@@ -23,6 +23,9 @@ export interface BindModuleContracts {
     [key: string]: SolidoContract & SolidoProvider;
 }
 
+/**
+ * Contract collection stores the contracts
+ */
 export class ContractCollection {
     private coll: BindModuleContracts = {};
     add(key: string, c: SolidoContract & SolidoProvider) {
@@ -33,8 +36,12 @@ export class ContractCollection {
         SolidoContract &
         SolidoProvider;
     }
+    getDynamicContract(key: string): SolidoContract {
+        return this.coll[key];
+    }
 }
 
+class Empty {}
 export class SolidoModule {
     providers: SolidoProvider[];
     constructor(private contractMappings: ContractProviderMapping[], ...providers: any[]) {
@@ -44,6 +51,15 @@ export class SolidoModule {
     bindContracts(): ContractCollection {
         const coll = new ContractCollection();
         this.contractMappings.map((c, index) => {
+            // if no entity is added and dynamic, use an empty class
+            if (!c.entity && c.enableDynamicStubs) {
+                c.entity = Empty;
+            }
+
+            if (!c.entity && !c.enableDynamicStubs) {
+                throw new Error('Must provide an entity class');
+            }
+
             // Creates temp fn to clone prototype
             const init: any = function fn() {}
             init.prototype = Object.create(c.entity.prototype);
