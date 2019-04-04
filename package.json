@@ -1,0 +1,58 @@
+{
+  "name": "@decent-bet/solido",
+  "version": "0.1.0",
+  "description": "Code first contract entity mapper for Solidity based blockchains like Ethereum, Vechain, Tron",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "npm run lint; rm -rf lib/; tsc -p .",
+    "test": "jest --watch",
+    "lint": "eslint --fix ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/decent-bet/solido.git"
+  },
+  "keywords": [
+    "blockchain",
+    "thor",
+    "vechain",
+    "ethereum",
+    "thorify",
+    "connex",
+    "web3"
+  ],
+  "author": "Decent.bet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/decent-bet/solido/issues"
+  },
+  "homepage": "https://github.com/decent-bet/solido#readme",
+  "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.12.0",
+    "@typescript-eslint/eslint-plugin": "^1.5.0",
+    "@vechain/connex": "^1.2.2",
+    "eslint": "^5.15.3",
+    "jest": "^24.5.0",
+    "nodemon": "^1.18.10",
+    "ts-jest": "^24.0.0",
+    "ts-node": "^8.0.3",
+    "typescript": "^3.3.4000"
+  },
+  "dependencies": {
+    "bignumber.js": "^8.1.1",
+    "ethereum-regex": "^1.1.5",
+    "ethereum-types": "^2.1.1",
+    "js-sha3": "^0.8.0",
+    "moment": "^2.24.0",
+    "rxjs": "^6.4.0",
+    "thor-devkit": "^0.10.0",
+    "thorify": "^1.1.0",
+    "web3": "1.0.0-beta.33"
+  }
+}
