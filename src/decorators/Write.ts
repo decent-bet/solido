@@ -28,7 +28,8 @@ export function Write(options: IMethodOrEventCall = {}) {
         
         Object.defineProperty(target, propertyKey, {
             value: write,
-            enumerable: false
+            enumerable: false,
+            configurable: true
         });
     };
 }

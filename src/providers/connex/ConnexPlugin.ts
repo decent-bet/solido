@@ -19,8 +19,11 @@ export class ConnexPlugin extends SolidoProvider
     public chainTag: string;
     public defaultAccount: string;
     public address: string;
-    public readonly providerType: SolidoProviderType = SolidoProviderType.Connex;
     
+    public getProviderType(): SolidoProviderType {
+        return SolidoProviderType.Connex
+    }
+
     public onReady<T>(settings: T & ConnexSettings): void {
         const { connex, chainTag, defaultAccount } = settings;
         this.connex = connex;
