@@ -17,7 +17,8 @@ export function GetEvent(options?: { name: string }) {
         
         Object.defineProperty(target, propertyKey, {
             value: getEvent,
-            enumerable: false
+            enumerable: false,
+            configurable: true
         });
     };
 }

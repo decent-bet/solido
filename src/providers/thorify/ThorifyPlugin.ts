@@ -16,7 +16,10 @@ export class ThorifyPlugin extends SolidoProvider implements SolidoContract {
     public defaultAccount: string;
     public address: string;
     private privateKey: string;
-    public readonly providerType: SolidoProviderType = SolidoProviderType.Thorify;
+    
+    public getProviderType(): SolidoProviderType {
+        return SolidoProviderType.Thorify
+    }
 
     onReady<T>(settings: T & ThorifySettings) {
         const { privateKey, thor, chainTag, defaultAccount } = settings;

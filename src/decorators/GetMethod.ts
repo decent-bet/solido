@@ -18,7 +18,8 @@ export function GetMethod(options: { name: string }) {
         
         Object.defineProperty(target, propertyKey, {
             value: getMethod,
-            enumerable: false
+            enumerable: false,
+            configurable: true
         });
     };
 }

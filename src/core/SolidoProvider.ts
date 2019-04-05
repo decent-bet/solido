@@ -12,7 +12,9 @@ export abstract class SolidoProvider {
     public methods: { [key: string]: any };
     protected abi: any[];
     protected contractImport: ContractImport;
-    public readonly providerType: SolidoProviderType;
+    protected providerType: SolidoProviderType;
+
+    public abstract getProviderType(): SolidoProviderType;
 
     protected buildDynamicStubs(): void {
         if (this.abi.length > 0) {
