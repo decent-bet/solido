@@ -5,54 +5,7 @@ import {
     Write,
 } from '../src/decorators';
 import { IMethodOrEventCall } from '../src/types';
-import { AbiUtils } from '../src/Utils';
 import { ConnexSolidoTopic } from '../src/providers/connex/ConnexSolidoTopic';
-
-const abiMethod = {
-    constant: false,
-    inputs: [
-        {
-            name: '_to',
-            type: 'address'
-        },
-        {
-            name: '_amount',
-            type: 'uint256'
-        }
-    ],
-    name: 'transfer',
-    outputs: [
-        {
-            name: 'success',
-            type: 'bool'
-        }
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function'
-};
-const abiEvent = {
-    anonymous: false,
-    inputs: [
-        {
-            indexed: true,
-            name: '_from',
-            type: 'address'
-        },
-        {
-            indexed: true,
-            name: '_to',
-            type: 'address'
-        },
-        {
-            indexed: false,
-            name: '_value',
-            type: 'uint256'
-        }
-    ],
-    name: 'Transfer',
-    type: 'event'
-};
 
 describe('Connex Provider', () => {
     describe('#ConnexPlugin', () => {
@@ -67,6 +20,7 @@ describe('Connex Provider', () => {
 
             expect(seq).toEqual([{"topic0": "0xc", "topic1": "0xb"}, {"topic2": "0xa"}]);
         });
+
         it('should create a module with contracts', async () => {
             // eslint-disable-next-line @typescript-eslint/no-object-literal-type-assertion
             const connex = {} as Connex;
@@ -80,15 +34,13 @@ describe('Connex Provider', () => {
 
         it('should create a Read(), execute it and return a response', async () => {
             // Mock
-            const obj = {
-                callMethod: jest.fn(i => {})
-            };
+            const obj: any = {};
             const options: IMethodOrEventCall = {};
             const thunk = Read(options)
             thunk(obj, 'balanceOf');
-            (obj as any).balanceOf();
-            
-            expect(obj.callMethod.mock.calls.length).toBe(1);
+            const spy = jest(obj, 'balanceOf');
+            obj.balanceOf();
+            expect(spy).toHaveBeenCalled();
         });
 
 

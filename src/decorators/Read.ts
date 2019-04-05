@@ -31,7 +31,8 @@ export function Read(options: IMethodOrEventCall = {}) {
       
         Object.defineProperty(target, propertyKey, {
             value: read,
-            enumerable: false
+            enumerable: false,
+            configurable: true
         });
     };
 }
