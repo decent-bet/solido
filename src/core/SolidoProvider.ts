@@ -1,4 +1,4 @@
-import { ContractImport } from '../types';
+import { ContractImport, SolidoProviderType } from '../types';
 import { TopicSignature } from './TopicSignature';
 import { _Read, _Write } from '../decorators';
 
@@ -12,6 +12,7 @@ export abstract class SolidoProvider {
     public methods: { [key: string]: any };
     protected abi: any[];
     protected contractImport: ContractImport;
+    public readonly providerType: SolidoProviderType;
 
     protected buildDynamicStubs(): void {
         if (this.abi.length > 0) {
@@ -22,13 +23,13 @@ export abstract class SolidoProvider {
                 if (definition.type === 'function' && definition.stateMutability === 'view') {
                     this.methods = {
                         ...this.methods,
-                        [definition.name]: (...req) => _Read(definition.name, contract, req, {})
+                        [definition.name]: (...req: any[]) => _Read(definition.name, contract, req, {})
                     };
                 }
                 if (definition.type === 'function' && definition.stateMutability === 'nonpayable') {
                     this.methods = {
                         ...this.methods,
-                        [definition.name]: (...req) => _Write(definition.name, contract, req, {})
+                        [definition.name]: (...req: any[]) => _Write(definition.name, contract, req, {})
                     };
                 }
             });

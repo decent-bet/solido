@@ -70,31 +70,12 @@ export interface EventFilterOptions<T> extends EventFilter<T> {
     name?: string;
 }
 
-// /**
-//  * Defines a Connex contract interface
-//  */
-// export interface IConnexContract {
-//     defaultAccount: string;
-//     connex: Connex;
-//     chainTag: string;
-// }
-// export interface IConnexOnReady {
-//     onConnexReady: (
-//         connex: Connex,
-//         chainTag: string,
-//         defaultAccount: string
-//     ) => void;
-// }
-// export interface IConnexBlockchainEventFilter {
-//     interval?: number | null;
-//     kind?: 'event' | 'transfer';
-//     blockConfirmationUntil?: number;
-// }
 
-// export interface ContractSetting {
-//     name: string;
-//     contract: any;
-// }
+export enum SolidoProviderType {
+    Connex,
+    Thorify,
+    Web3
+}
 
 
 // thorify

@@ -1,6 +1,6 @@
 // eslint-disable-next-line spaced-comment
 import Web3 from 'web3'
-import { IMethodOrEventCall, EventFilter, ThorifyLog } from '../../types';
+import { IMethodOrEventCall, EventFilter, ThorifyLog, SolidoProviderType } from '../../types';
 import { ThorifySigner } from './ThorifySigner';
 import { ThorifySettings } from './ThorifySettings';
 import { SolidoProvider } from '../../core/SolidoProvider';
@@ -16,6 +16,7 @@ export class ThorifyPlugin extends SolidoProvider implements SolidoContract {
     public defaultAccount: string;
     public address: string;
     private privateKey: string;
+    public readonly providerType: SolidoProviderType = SolidoProviderType.Thorify;
 
     onReady<T>(settings: T & ThorifySettings) {
         const { privateKey, thor, chainTag, defaultAccount } = settings;
