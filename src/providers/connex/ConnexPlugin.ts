@@ -2,7 +2,7 @@
 /// <reference types="@vechain/connex" />
 
 import { abi } from 'thor-devkit';
-import { IMethodOrEventCall, EventFilter } from '../../types';
+import { IMethodOrEventCall, EventFilter, SolidoProviderType } from '../../types';
 import { ConnexSigner } from './ConnexSigner';
 import { ConnexSettings } from './ConnexSettings';
 import { SolidoContract, SolidoSigner } from '../../core/SolidoContract';
@@ -19,7 +19,8 @@ export class ConnexPlugin extends SolidoProvider
     public chainTag: string;
     public defaultAccount: string;
     public address: string;
-
+    public readonly providerType: SolidoProviderType = SolidoProviderType.Connex;
+    
     public onReady<T>(settings: T & ConnexSettings): void {
         const { connex, chainTag, defaultAccount } = settings;
         this.connex = connex;
