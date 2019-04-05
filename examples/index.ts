@@ -10,12 +10,7 @@ const { thorify } = require('thorify');
 // Create Solido Module
 export const module = new SolidoModule([
     {
-        name: 'ConnexToken',
-        import: EnergyContractImport,
-        entity: EnergyTokenContract,
-    },
-    {
-        name: 'ThorifyToken',
+        name: 'Token',
         import: EnergyContractImport,
         entity: EnergyTokenContract,
         enableDynamicStubs: true
@@ -27,33 +22,35 @@ const chainTag = '0x..';
 const defaultAccount = '0x.....';
 const thorUrl = 'https://your-thor-url.com';
 
-const thor = thorify(new Web3(thorUrl), thorUrl);
+// const thor = thorify(new Web3(thorUrl), thorUrl);
 
 const contracts = module.bindContracts();
-const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
-token.onReady<ThorifySettings>({
-    privateKey,
-    thor,
-    defaultAccount,
-    chainTag
-});
 
-(async () => {
+console.log(contracts);
+// const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
+// token.onReady<ThorifySettings>({
+//     privateKey,
+//     thor,
+//     defaultAccount,
+//     chainTag
+// });
 
-    // Get balance using dynamic method
-    const balance = await token.methods.balanceOf(defaultAccount);
-    console.log(balance);
+// (async () => {
 
-    // Get method
-    const fn = await token.balanceOfMethod();
-    console.log(fn);
+//     // Get balance using dynamic method
+//     const balance = await token.methods.balanceOf(defaultAccount);
+//     console.log(balance);
 
-    // Write using dynamic method
-    const tx1 = await token.methods.approve('0x.....', new BigNumber(1**6))
-    const tx2 = await token.methods.transfer('0x.....', new BigNumber(1**6));
-    console.log(tx1, tx2);
+//     // Get method
+//     const fn = await token.balanceOfMethod();
+//     console.log(fn);
+
+//     // Write using dynamic method
+//     const tx1 = await token.methods.approve('0x.....', new BigNumber(1**6))
+//     const tx2 = await token.methods.transfer('0x.....', new BigNumber(1**6));
+//     console.log(tx1, tx2);
     
-    // // Events
-    const events = await token.getTransferEvents({ pageOptions: { limit: 10, offset: 10 } });
-    console.log(events);
-})();
+//     // // Events
+//     const events = await token.getTransferEvents({ pageOptions: { limit: 10, offset: 10 } });
+//     console.log(events);
+// })();
