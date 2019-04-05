@@ -92,7 +92,9 @@ describe('ThorifyProvider', () => {
                 callMethod: jest.fn(i => {})
             };
             const options: IMethodOrEventCall = {};
-            Read(options)(obj, 'balanceOf');
+            const thunk = Read(options)
+            thunk.bind(obj)(obj, 'balanceOf');
+            (obj as any).balanceOf();
             expect(obj.callMethod.mock.calls.length).toBe(1);
         });
 
@@ -113,7 +115,9 @@ describe('ThorifyProvider', () => {
                     }
                 }),
             };
-            Write()(obj, 'transfer');
+            const thunk = Write();
+            thunk.bind(obj)(obj, 'transfer');
+            (obj as any).transfer(0);
             expect(obj.getMethod.mock.calls.length).toBe(1);
             expect(obj.prepareSigning.mock.calls.length).toBe(1);
         });
