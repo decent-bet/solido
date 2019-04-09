@@ -4,30 +4,30 @@ import { Read } from '../src/decorators/Read';
 const EnergyTokenContractAbi = require('./Energy');
 
 export const EnergyContractImport: ContractImport = {
-  raw: {
-    abi: EnergyTokenContractAbi.abi
-  },
-  address: {
-    '0x27': '0x0000000000000000000000000000456E65726779',
-    '0x4a': '0x0000000000000000000000000000456E65726779'
-  }
+    raw: {
+        abi: EnergyTokenContractAbi.abi
+    },
+    address: {
+        '0x27': '0x0000000000000000000000000000456E65726779',
+        '0x4a': '0x0000000000000000000000000000456E65726779'
+    }
 };
 
 export class EnergyTokenContract {
-  // @GetMethod({
-  //   nameOrAbi: 'balanceOf',
-  // })
-  // public balanceOfMethod(): any {}
+    // @GetMethod({
+    //   nameOrAbi: 'balanceOf',
+    // })
+    // public balanceOfMethod(): any {}
 
-  // @Write({
-  //   nameOrAbi: 'transfer',
-  //   gas: 90_000
-  // })
-  // public transferMethod(sendTo: string, wei: BigNumber): any {}
+    // @Write({
+    //   nameOrAbi: 'transfer',
+    //   gas: 90_000
+    // })
+    // public transferMethod(sendTo: string, wei: BigNumber): any {}
 
 
   @Read()
-  public balanceOf(address: string): any {}
+    public balanceOf: (address: string) => string;
 
 
   // @AccountEventFilter({
@@ -73,6 +73,6 @@ export class EnergyTokenContract {
 
 
   public get tokenName() {
-    return 'VTHO';
+      return 'VTHO';
   }
 }
