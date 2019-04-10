@@ -28,10 +28,11 @@ export function Read(options: IMethodOrEventCall = {}) {
         const read = async function(...args: any[]) {
             return _Read(propertyKey, this, args, options);
         };
-      
+        
         Object.defineProperty(target, propertyKey, {
             value: read,
-            enumerable: false
+            enumerable: false,
+            configurable: true
         });
     };
 }

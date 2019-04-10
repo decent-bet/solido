@@ -1,57 +1,14 @@
+import 'jasmine';
 import { ThorifySolidoTopic } from '../src/providers/thorify/ThorifySolidoTopic';
 import { module } from './index';
 import { EnergyTokenContract } from './EnergyContract';
 import { Read } from '../src/decorators/Read';
-import { IMethodOrEventCall } from '../src/types';
+import { IMethodOrEventCall, EventFilterOptions } from '../src/types';
 import { ThorifySettings } from '../src/providers/thorify/ThorifySettings';
-import { Write } from '../src/decorators';
+import { Write, GetEvents } from '../src/decorators';
 const Web3 = require('web3');
 const { thorify } = require('thorify');
-const abiMethod = {
-    constant: false,
-    inputs: [
-        {
-            name: '_to',
-            type: 'address'
-        },
-        {
-            name: '_amount',
-            type: 'uint256'
-        }
-    ],
-    name: 'transfer',
-    outputs: [
-        {
-            name: 'success',
-            type: 'bool'
-        }
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function'
-};
-const abiEvent = {
-    anonymous: false,
-    inputs: [
-        {
-            indexed: true,
-            name: '_from',
-            type: 'address'
-        },
-        {
-            indexed: true,
-            name: '_to',
-            type: 'address'
-        },
-        {
-            indexed: false,
-            name: '_value',
-            type: 'uint256'
-        }
-    ],
-    name: 'Transfer',
-    type: 'event'
-};
+
 
 describe('ThorifyProvider', () => {
     describe('#ThorifyPlugin', () => {
@@ -66,6 +23,7 @@ describe('ThorifyProvider', () => {
 
             expect(seq[0].length).toBe(2);
         });
+
         it('should create a module with contracts', async () => {
             const privateKey =
         '0xdce1443bd2ef0c2631adc1c67e5c93f13dc23a41c18b536effbbdcbcdb96fb65';
@@ -77,46 +35,62 @@ describe('ThorifyProvider', () => {
       
             const contracts = module.bindContracts();
             const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
+
+            const spy = spyOn(token, 'onReady');
+
             token.onReady<ThorifySettings>({
                 privateKey,
                 thor,
                 defaultAccount,
                 chainTag
             });
-      
+        
+            expect(contracts).not.toBe(null);
+            expect(token).not.toBe(null);
+            expect(spy).toHaveBeenCalled();
         });
 
         it('should create a Read(), execute it and return a response', async () => {
             // Mock
             const obj = {
-                callMethod: jest.fn(i => {})
+                callMethod: jasmine.createSpy('callMethod'),
             };
-            const options: IMethodOrEventCall = {};
-            Read(options)(obj, 'balanceOf');
-            expect(obj.callMethod.mock.calls.length).toBe(1);
+            const options: IMethodOrEventCall = { };
+            const thunk = Read(options);
+            thunk(obj, 'balanceOf');
+            expect((obj as any).balanceOf).toBeDefined();
+            (obj as any).balanceOf();
+            expect(obj.callMethod.calls.count()).toBe(1);
         });
 
-
         it('should create a Write() and return a Promise', async () => {
-            const signerMock = {
-                requestSigning: jest.fn()
+            const signerMock: any = {
+                requestSigning: jasmine.createSpy('requestSigning')
             };
             // Mock
             const obj = {
-                prepareSigning: jest.fn(() => {
-                    return Promise.resolve(signerMock);
-                }),
-                getMethod: jest.fn(() => {
-                    return {
-                        call: jest.fn(),
-                        encodeABI: jest.fn(),
-                    }
-                }),
+                prepareSigning: jasmine.createSpy('prepareSigning').and.returnValue(Promise.resolve(signerMock)),
+                getMethod: jasmine.createSpy('getMethod'),
             };
-            Write()(obj, 'transfer');
-            expect(obj.getMethod.mock.calls.length).toBe(1);
-            expect(obj.prepareSigning.mock.calls.length).toBe(1);
+            const thunk = Write()
+            thunk(obj, 'transfer');
+            expect((obj as any).transfer).toBeDefined();
+            (obj as any).transfer([]);
+            expect(obj.getMethod.calls.count()).toBe(1);
+            expect(obj.prepareSigning.calls.count()).toBe(1);
         });
-  
+        
+        it('should create a GetEvents(), execute it and return a response', async () => {
+            // Mock
+            const obj = {
+                getEvents: jasmine.createSpy('getEvents'),
+            };
+            const options: EventFilterOptions<any> = { };
+            const thunk = GetEvents(options);
+            thunk(obj, 'logNewTransfer');
+            expect((obj as any).logNewTransfer).toBeDefined();
+            (obj as any).logNewTransfer();
+            expect(obj.getEvents.calls.count()).toBe(1);
+        });
     });
 });

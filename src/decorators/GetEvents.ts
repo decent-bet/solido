@@ -27,7 +27,8 @@ export function GetEvents<P, T>(options: EventFilterOptions<T>) {
         
         Object.defineProperty(target, propertyKey, {
             value: getEventsCall,
-            enumerable: false
+            enumerable: false,
+            configurable: true
         });
     };
 }
