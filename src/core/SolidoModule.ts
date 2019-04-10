@@ -94,14 +94,20 @@ export class SolidoModule {
         // Creates temp fn to clone prototype
         const init: any = function fn() {}
         init.prototype = Object.create(c.entity.prototype);
+        
         // Apply provider and SolidoProvider Plugin to entity type
         applyMixins(init, [provider, SolidoProvider]);
         const instance = new init();
-        console.log((instance as SolidoContract & SolidoProvider).providerType)
         instance.setContractImport(c.import);
         if (c.enableDynamicStubs) {
             instance.buildDynamicStubs();
         }
-        collection.add(c.name, instance as SolidoContract & SolidoProvider);
+
+        let name = c.name;
+        if (generateName) {
+            const providerName = SolidoProviderType[instance.getProviderType()];
+            name = `${providerName}${c.name}`;            
+        }
+        collection.add(name, instance as SolidoContract & SolidoProvider);
     }
 }
