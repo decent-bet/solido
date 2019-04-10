@@ -131,7 +131,7 @@ token.onReady<ThorifySettings>({
   
   ### Dynamic Contract Entities
   
-  To let Solido generate Read and Write methods, set `enableDynamicStubs: true` in contract mapping entry and use `GetDynamicContract` to get the contract. The generated stubes are available in `contract.methods`.
+  To let Solido generate Read and Write methods, set `enableDynamicStubs: true` in contract mapping entry and use `GetDynamicContract` to get the contract. The generated stubs are available in `contract.methods`.
   
   ```typescript
   export const module = new SolidoModule([
