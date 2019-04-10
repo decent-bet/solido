@@ -1,14 +1,15 @@
 import 'jasmine';
 import { ThorifySolidoTopic } from '../src/providers/thorify/ThorifySolidoTopic';
 import { module } from './index';
-import { EnergyTokenContract } from './EnergyContract';
+import { EnergyTokenContract, EnergyContractImport } from './EnergyContract';
 import { Read } from '../src/decorators/Read';
 import { IMethodOrEventCall, EventFilterOptions } from '../src/types';
 import { ThorifySettings } from '../src/providers/thorify/ThorifySettings';
 import { Write, GetEvents } from '../src/decorators';
+import { SolidoModule } from '../src/core/SolidoModule';
+import { ConnexPlugin, ThorifyPlugin } from '../src';
 const Web3 = require('web3');
 const { thorify } = require('thorify');
-
 
 describe('ThorifyProvider', () => {
     describe('#ThorifyPlugin', () => {
@@ -30,9 +31,22 @@ describe('ThorifyProvider', () => {
             const chainTag = '0x4a';
             const defaultAccount = '0x7567d83b7b8d80addcb281a71d54fc7b3364ffed';
             const thorUrl = 'http://localhost:8669';
-      
+
             const thor = thorify(new Web3(), thorUrl);
-      
+            // Create Solido Module
+            // Uses short module syntax
+            const module = new SolidoModule(
+                [
+                    {
+                        name: 'Token',
+                        import: EnergyContractImport,
+                        entity: EnergyTokenContract,
+                        enableDynamicStubs: true
+                    }
+                ],
+                ConnexPlugin,
+                ThorifyPlugin
+            );
             const contracts = module.bindContracts();
             const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
 
@@ -44,7 +58,7 @@ describe('ThorifyProvider', () => {
                 defaultAccount,
                 chainTag
             });
-        
+
             expect(contracts).not.toBe(null);
             expect(token).not.toBe(null);
             expect(spy).toHaveBeenCalled();
@@ -53,9 +67,9 @@ describe('ThorifyProvider', () => {
         it('should create a Read(), execute it and return a response', async () => {
             // Mock
             const obj = {
-                callMethod: jasmine.createSpy('callMethod'),
+                callMethod: jasmine.createSpy('callMethod')
             };
-            const options: IMethodOrEventCall = { };
+            const options: IMethodOrEventCall = {};
             const thunk = Read(options);
             thunk(obj, 'balanceOf');
             expect((obj as any).balanceOf).toBeDefined();
@@ -69,23 +83,25 @@ describe('ThorifyProvider', () => {
             };
             // Mock
             const obj = {
-                prepareSigning: jasmine.createSpy('prepareSigning').and.returnValue(Promise.resolve(signerMock)),
-                getMethod: jasmine.createSpy('getMethod'),
+                prepareSigning: jasmine
+                    .createSpy('prepareSigning')
+                    .and.returnValue(Promise.resolve(signerMock)),
+                getMethod: jasmine.createSpy('getMethod')
             };
-            const thunk = Write()
+            const thunk = Write();
             thunk(obj, 'transfer');
             expect((obj as any).transfer).toBeDefined();
             (obj as any).transfer([]);
             expect(obj.getMethod.calls.count()).toBe(1);
             expect(obj.prepareSigning.calls.count()).toBe(1);
         });
-        
+
         it('should create a GetEvents(), execute it and return a response', async () => {
             // Mock
             const obj = {
-                getEvents: jasmine.createSpy('getEvents'),
+                getEvents: jasmine.createSpy('getEvents')
             };
-            const options: EventFilterOptions<any> = { };
+            const options: EventFilterOptions<any> = {};
             const thunk = GetEvents(options);
             thunk(obj, 'logNewTransfer');
             expect((obj as any).logNewTransfer).toBeDefined();

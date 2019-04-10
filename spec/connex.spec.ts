@@ -1,13 +1,10 @@
 import 'jasmine';
 import { module } from './index';
-import { EnergyTokenContract } from './EnergyContract';
-import {
-    Read,
-    Write,
-    GetEvents,
-} from '../src/decorators';
+import { EnergyTokenContract, EnergyContractImport } from './EnergyContract';
+import { Read, Write, GetEvents } from '../src/decorators';
 import { IMethodOrEventCall, EventFilterOptions } from '../src/types';
 import { ConnexSolidoTopic } from '../src/providers/connex/ConnexSolidoTopic';
+import { SolidoModule, ConnexPlugin, ThorifyPlugin, SolidoProvider, SolidoContract } from '../src';
 
 describe('Connex Provider', () => {
     describe('#ConnexPlugin', () => {
@@ -20,7 +17,10 @@ describe('Connex Provider', () => {
                 .or(2, '0xa')
                 .get();
 
-            expect(seq).toEqual([{"topic0": "0xc", "topic1": "0xb"}, {"topic2": "0xa"}]);
+            expect(seq).toEqual([
+                { topic0: '0xc', topic1: '0xb' },
+                { topic2: '0xa' }
+            ]);
         });
 
         it('should create a module with contracts', async () => {
@@ -29,11 +29,25 @@ describe('Connex Provider', () => {
             const chainTag = '0xa4';
             const defaultAccount = '0x';
 
+            // Create Solido Module
+            // Uses short module syntax
+            const module = new SolidoModule(
+                [
+                    {
+                        name: 'Token',
+                        import: EnergyContractImport,
+                        entity: EnergyTokenContract,
+                        enableDynamicStubs: true
+                    }
+                ],
+                ConnexPlugin,
+                ThorifyPlugin
+            );
             const contracts = module.bindContracts();
-            const token = contracts.getContract<EnergyTokenContract>('ConnexToken'); 
+            const token = contracts.getContract<EnergyTokenContract &  SolidoContract>('ConnexToken');
             const spy = spyOn(token, 'onReady');
             token.onReady({ connex, chainTag, defaultAccount });
-            
+
             expect(contracts).not.toBe(null);
             expect(token).not.toBe(null);
             expect(spy).toHaveBeenCalled();
@@ -42,7 +56,7 @@ describe('Connex Provider', () => {
         it('should create a Read(), execute it and return a response', async () => {
             // Mock
             const obj = {
-                callMethod: jasmine.createSpy('callMethod'),
+                callMethod: jasmine.createSpy('callMethod')
             };
             const options: IMethodOrEventCall = {};
             const thunk = Read(options);
@@ -58,10 +72,12 @@ describe('Connex Provider', () => {
             };
             // Mock
             const obj = {
-                prepareSigning: jasmine.createSpy('prepareSigning').and.returnValue(Promise.resolve(signerMock)),
-                getMethod: jasmine.createSpy('getMethod'),
+                prepareSigning: jasmine
+                    .createSpy('prepareSigning')
+                    .and.returnValue(Promise.resolve(signerMock)),
+                getMethod: jasmine.createSpy('getMethod')
             };
-            const thunk = Write()
+            const thunk = Write();
             thunk(obj, 'transfer');
             expect((obj as any).transfer).toBeDefined();
             (obj as any).transfer([]);
@@ -72,9 +88,9 @@ describe('Connex Provider', () => {
         it('should create a GetEvents(), execute it and return a response', async () => {
             // Mock
             const obj = {
-                getEvents: jasmine.createSpy('getEvents'),
+                getEvents: jasmine.createSpy('getEvents')
             };
-            const options: EventFilterOptions<any> = { };
+            const options: EventFilterOptions<any> = {};
             const thunk = GetEvents(options);
             thunk(obj, 'logNewTransfer');
             expect((obj as any).logNewTransfer).toBeDefined();

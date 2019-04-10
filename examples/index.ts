@@ -8,14 +8,10 @@ const Web3 = require('web3');
 const { thorify } = require('thorify');
 
 // Create Solido Module
+// Uses short module syntax
 export const module = new SolidoModule([
     {
-        name: 'ConnexToken',
-        import: EnergyContractImport,
-        entity: EnergyTokenContract,
-    },
-    {
-        name: 'ThorifyToken',
+        name: 'Token',
         import: EnergyContractImport,
         entity: EnergyTokenContract,
         enableDynamicStubs: true
@@ -30,6 +26,8 @@ const thorUrl = 'https://your-thor-url.com';
 const thor = thorify(new Web3(thorUrl), thorUrl);
 
 const contracts = module.bindContracts();
+
+
 const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
 token.onReady<ThorifySettings>({
     privateKey,
