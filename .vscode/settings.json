@@ -4,5 +4,6 @@
   "eslint.validate": [
     { "language": "javasacript", "autoFix": true },
     { "language": "typescript", "autoFix": true }
-  ]
+  ],
+  "jasmineExplorer.nodeArgv": ["-r", "ts-node/register"]
 }
