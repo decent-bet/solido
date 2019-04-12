@@ -32,7 +32,9 @@ export class ThorifyPlugin extends SolidoProvider implements SolidoContract {
             this.contractImport.address[chainTag]
         )
         this.address = this.contractImport.address[chainTag];
-        this.thor.eth.accounts.wallet.add(privateKey);
+        if (privateKey) {
+            this.thor.eth.accounts.wallet.add(privateKey);
+        }
     }
 
     async prepareSigning(methodCall: any, options: IMethodOrEventCall, args: any[]):  Promise<SolidoSigner> {
@@ -43,12 +45,12 @@ export class ThorifyPlugin extends SolidoProvider implements SolidoContract {
         if (!options.gas) gas = 1000000
 
         const fn = methodCall(...args);
-        await fn.call({ from: options.from || this.defaultAccount });
+        // await fn.call({ from: options.from || this.defaultAccount });
         const encodedFunctionCall = fn.encodeABI();
   
         let txBody = {
             from: options.from || this.defaultAccount,
-            to: this.address,
+            // to: this.address,
             gas,
             encodedFunctionCall,
             gasPriceCoef
