@@ -37,9 +37,7 @@ export class Web3Plugin extends SolidoProvider implements SolidoContract {
 
     async prepareSigning(methodCall: any, options: IMethodOrEventCall, args: any[]):  Promise<SolidoSigner> {
         let gas = options.gas;
-        let gasPriceCoef = options.gasPriceCoef;
         
-        if (!options.gasPriceCoef) gasPriceCoef = 0
         if (!options.gas) gas = 1000000
 
         const fn = methodCall(...args);
@@ -48,10 +46,9 @@ export class Web3Plugin extends SolidoProvider implements SolidoContract {
   
         let txBody = {
             from: options.from || this.defaultAccount,
-            to: this.address,
+            // to: this.address,
             gas,
             encodedFunctionCall,
-            gasPriceCoef
         }
 
         console.log('signAndSendRawTransaction - txBody:', txBody)
