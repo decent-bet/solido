@@ -50,7 +50,7 @@ export class ThorifyPlugin extends SolidoProvider implements SolidoContract {
   
         let txBody = {
             from: options.from || this.defaultAccount,
-            // to: this.address,
+            to: this.address,
             gas,
             encodedFunctionCall,
             gasPriceCoef
