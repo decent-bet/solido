@@ -17,16 +17,20 @@ export class ThorifyPlugin extends SolidoProvider implements SolidoContract {
     public address: string;
     private privateKey: string;
     
+    get from() {
+        return this.defaultAccount;
+    }
+
     public getProviderType(): SolidoProviderType {
         return SolidoProviderType.Thorify
     }
 
     onReady<T>(settings: T & ThorifySettings) {
-        const { privateKey, thor, chainTag, defaultAccount } = settings;
+        const { privateKey, thor, chainTag, from } = settings;
         this.privateKey = privateKey;
         this.thor = thor;
         this.chainTag = chainTag;
-        this.defaultAccount = defaultAccount;
+        this.defaultAccount = from;
         this.instance = new thor.eth.Contract(
             this.contractImport.raw.abi as any,
             this.contractImport.address[chainTag]
@@ -45,11 +49,10 @@ export class ThorifyPlugin extends SolidoProvider implements SolidoContract {
         if (!options.gas) gas = 1000000
 
         const fn = methodCall(...args);
-        // await fn.call({ from: options.from || this.defaultAccount });
         const encodedFunctionCall = fn.encodeABI();
   
         let txBody = {
-            from: options.from || this.defaultAccount,
+            from: this.defaultAccount,
             to: this.address,
             gas,
             encodedFunctionCall,

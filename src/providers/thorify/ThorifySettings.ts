@@ -4,5 +4,5 @@ export class ThorifySettings {
     privateKey: string;
     thor: Web3;    
     chainTag: string;
-    defaultAccount: string;
+    from: string;
 }
