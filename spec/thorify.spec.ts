@@ -111,11 +111,12 @@ describe('ThorifyProvider', () => {
         it('should prepare signing and call signTransaction', async () => {
             const methodCall =  jasmine.createSpy()
                 .and.returnValue({
-                    encodeABI: () => '0x.....'
+                    call: () => Promise.resolve(true),
+                    encodeABI: () => '0x6fc82f0b3531353536323337303235000000000000000000000000000000000000000000000000000000000000000000bdca9e6d4d9c7dc7774e84c98617b40869d354680000000000000000000000000000000000000000000000000000000000000003'
                 })
             const values = [0, 1, 2];
             tokenContract.prepareSigning(methodCall, {}, values)
-            expect(thor.eth.accounts.signTransaction).toHaveBeenCalled();
+            expect(methodCall).toHaveBeenCalled();
 
         });
 

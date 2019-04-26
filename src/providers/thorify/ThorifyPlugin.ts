@@ -48,7 +48,11 @@ export class ThorifyPlugin extends SolidoProvider implements SolidoContract {
         if (!options.gasPriceCoef) gasPriceCoef = 0
         if (!options.gas) gas = 1000000
 
+        // get method instance with args
         const fn = methodCall(...args);
+
+        //  call
+        await fn.call({ from:  this.defaultAccount });
         const encodedFunctionCall = fn.encodeABI();
   
         let txBody = {
