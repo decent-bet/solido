@@ -7,32 +7,32 @@ import { IMethodOrEventCall, EventFilterOptions } from '../src/types';
 import { ThorifySettings } from '../src/providers/thorify/ThorifySettings';
 import { Write, GetEvents } from '../src/decorators';
 import { SolidoModule } from '../src/core/SolidoModule';
-import { ConnexPlugin, ThorifyPlugin } from '../src';
+import { ConnexPlugin, ThorifyPlugin, SolidoContract, SolidoProvider } from '../src';
 const Web3 = require('web3');
 const { thorify } = require('thorify');
 
 describe('ThorifyProvider', () => {
     describe('#ThorifyPlugin', () => {
-        it('should generate topics for Connex', async () => {
-            const topics = new ThorifySolidoTopic();
-
-            const seq = topics
-                .topic('0xc')
-                .and('0xb')
-                .or('0xa')
-                .get();
-
-            expect(seq[0].length).toBe(2);
-        });
-
-        it('should create a module with contracts', async () => {
+        let thor;
+        let tokenContract: EnergyTokenContract & SolidoContract & SolidoProvider;
+        beforeEach(async () => {
             const privateKey =
         '0xdce1443bd2ef0c2631adc1c67e5c93f13dc23a41c18b536effbbdcbcdb96fb65';
             const chainTag = '0x4a';
             const defaultAccount = '0x7567d83b7b8d80addcb281a71d54fc7b3364ffed';
             const thorUrl = 'http://localhost:8669';
 
-            const thor = thorify(new Web3(), thorUrl);
+            thor = {
+                eth: {
+                    Contract: function() {},
+                    accounts: {
+                        wallet: {
+                            add: jasmine.createSpy()
+                        },
+                        signTransaction: jasmine.createSpy('signTransaction')
+                    }
+                }
+            } as any;
             // Create Solido Module
             // Uses short module syntax
             const module = new SolidoModule(
@@ -49,19 +49,31 @@ describe('ThorifyProvider', () => {
             );
             const contracts = module.bindContracts();
             const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
+            expect(contracts).not.toBe(null);
+            expect(token).not.toBe(null);
 
-            const spy = spyOn(token, 'onReady');
+            tokenContract = token;
 
             token.onReady<ThorifySettings>({
                 privateKey,
                 thor,
-                defaultAccount,
+                from: defaultAccount,
                 chainTag
             });
 
-            expect(contracts).not.toBe(null);
-            expect(token).not.toBe(null);
-            expect(spy).toHaveBeenCalled();
+            expect(token.address).toBeDefined();
+        });
+
+        it('should generate topics for Connex', async () => {
+            const topics = new ThorifySolidoTopic();
+
+            const seq = topics
+                .topic('0xc')
+                .and('0xb')
+                .or('0xa')
+                .get();
+
+            expect(seq[0].length).toBe(2);
         });
 
         it('should create a Read(), execute it and return a response', async () => {
@@ -94,6 +106,18 @@ describe('ThorifyProvider', () => {
             (obj as any).transfer([]);
             expect(obj.getMethod.calls.count()).toBe(1);
             expect(obj.prepareSigning.calls.count()).toBe(1);
+        });
+
+        it('should prepare signing and call signTransaction', async () => {
+            const methodCall =  jasmine.createSpy()
+                .and.returnValue({
+                    call: () => Promise.resolve(true),
+                    encodeABI: () => '0x6fc82f0b3531353536323337303235000000000000000000000000000000000000000000000000000000000000000000bdca9e6d4d9c7dc7774e84c98617b40869d354680000000000000000000000000000000000000000000000000000000000000003'
+                })
+            const values = [0, 1, 2];
+            tokenContract.prepareSigning(methodCall, {}, values)
+            expect(methodCall).toHaveBeenCalled();
+
         });
 
         it('should create a GetEvents(), execute it and return a response', async () => {
