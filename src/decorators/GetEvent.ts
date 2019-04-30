@@ -1,4 +1,9 @@
 import { SolidoContract } from '../core/SolidoContract';
+
+export function _GetEvent(name: string, contract: SolidoContract) {
+    return contract.getEvent(name);        
+}
+
 /**
  * Annotates a Connex thor.event
  * @param options props
