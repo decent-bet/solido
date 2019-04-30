@@ -1,6 +1,6 @@
 import { ContractImport, SolidoProviderType } from '../types';
 import { TopicSignature } from './TopicSignature';
-import { _Read, _Write } from '../decorators';
+import { _Read, _Write, _GetEvent } from '../decorators';
 
 
 /**
@@ -10,6 +10,7 @@ import { _Read, _Write } from '../decorators';
 export abstract class SolidoProvider {
     public topics: { [key: string]: TopicSignature };
     public methods: { [key: string]: any };
+    public events: { [key: string]: any };
     protected abi: any[];
     protected contractImport: ContractImport;
     protected providerType: SolidoProviderType;
@@ -20,6 +21,7 @@ export abstract class SolidoProvider {
         if (this.abi.length > 0) {
             const contract: any = this;
             this.methods = {};
+            this.events = {};
             // Add Read, Writes
             this.abi.forEach(definition => {
                 if (definition.type === 'function' && definition.stateMutability === 'view') {
@@ -33,6 +35,12 @@ export abstract class SolidoProvider {
                         ...this.methods,
                         [definition.name]: (...req: any[]) => _Write(definition.name, contract, req, {})
                     };
+                }
+                if (definition.type === 'event') {
+                    this.events = {
+                        ...this.events,
+                        [definition.name]: () => _GetEvent(definition.name, contract)
+                    }
                 }
             });
         }
