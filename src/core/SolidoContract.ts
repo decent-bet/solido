@@ -2,7 +2,7 @@ import { IMethodOrEventCall, EventFilter } from '../types';
 
 
 export interface SolidoSigner {
-    payload: any;
+    payload?: any;
     requestSigning(): Promise<any>;
 }
 

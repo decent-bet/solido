@@ -51,27 +51,10 @@ export class ThorifyPlugin extends SolidoProvider implements SolidoContract {
         // get method instance with args
         const fn = methodCall(...args);
 
-        //  call
-        await fn.call({ from:  this.defaultAccount });
-        const encodedFunctionCall = fn.encodeABI();
-  
-        let txBody = {
-            from: this.defaultAccount,
-            to: this.address,
+        return new ThorifySigner(this.thor, fn, this.defaultAccount, {
             gas,
-            encodedFunctionCall,
             gasPriceCoef
-        }
-
-        console.log('signAndSendRawTransaction - txBody:', txBody)
-
-        let signed = await this.thor.eth.accounts.signTransaction(
-            txBody,
-            this.privateKey
-        )
-
-
-        return new ThorifySigner(this.thor, signed);
+        });
     }
   
       
