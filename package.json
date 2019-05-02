@@ -11,7 +11,8 @@
     "prepublishOnly": "npm run build",
     "build": "npm run lint; rm -rf lib/; tsc -p .",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
-    "lint": "eslint --fix ."
+    "lint": "eslint --fix .",
+    "build:esm": "tsc --module esnext --target es2016 --outDir esm --moduleResolution node --esModuleInterop true"
   },
   "repository": {
     "type": "git",
