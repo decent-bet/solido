@@ -9,7 +9,7 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build && npm run build:esm",
-    "build": "npm run lint; rm -rf lib/; tsc -p .",
+    "build": "rm -rf lib/; tsc -p .",
     "test": "ts-node node_modules/jasmine/bin/jasmine",
     "lint": "eslint --fix .",
     "build:esm": "tsc --module esnext --target es2016 --outDir esm --moduleResolution node --esModuleInterop true"
