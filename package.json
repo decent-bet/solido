@@ -1,6 +1,6 @@
 {
   "name": "@decent-bet/solido",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Code first contract entity mapper for Solidity based blockchains like Ethereum, Vechain, Tron",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -48,7 +48,6 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "ethereum-types": "^2.1.1",
-    "moment": "^2.24.0",
     "rxjs": "^6.4.0",
     "thor-devkit": "^0.10.0",
     "thorify": "^1.1.0",
