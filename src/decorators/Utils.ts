@@ -1,6 +1,13 @@
 import { BigNumber } from 'bignumber.js';
 import { IValidationType } from '../types';
-const ethereumRegex = require('ethereum-regex');
+
+
+// extracted from ethereum-regex
+const re = '0x[a-fA-F0-9]{40}';
+const ethereumRegex = opts => {
+    opts = opts || {};
+    return opts.exact ? new RegExp('(?:^' + re + '$)') : new RegExp(re, 'g');
+};
 
 export function validate(
     params: { [key: string]: IValidationType },
