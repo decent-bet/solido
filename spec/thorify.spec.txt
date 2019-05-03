@@ -7,7 +7,7 @@ import { IMethodOrEventCall, EventFilterOptions } from '../src/types';
 import { ThorifySettings } from '../src/providers/thorify/ThorifySettings';
 import { Write, GetEvents } from '../src/decorators';
 import { SolidoModule } from '../src/core/SolidoModule';
-import { ConnexPlugin, ThorifyPlugin, SolidoContract, SolidoProvider } from '../src';
+import { ThorifyPlugin, SolidoContract, SolidoProvider } from '../src';
 const Web3 = require('web3');
 const { thorify } = require('thorify');
 
@@ -44,7 +44,6 @@ describe('ThorifyProvider', () => {
                         enableDynamicStubs: true
                     }
                 ],
-                ConnexPlugin,
                 ThorifyPlugin
             );
             const contracts = module.bindContracts();
