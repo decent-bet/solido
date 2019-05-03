@@ -1,6 +1,5 @@
 import { SolidoModule } from '../src/core/SolidoModule';
 import { ThorifyPlugin } from '../src/providers/thorify/ThorifyPlugin';
-import { ConnexPlugin } from '../src/providers/connex/ConnexPlugin';
 import { EnergyTokenContract, EnergyContractImport } from './EnergyContract';
 // Create Solido Module
 export const module = new SolidoModule([
@@ -14,4 +13,4 @@ export const module = new SolidoModule([
         import: EnergyContractImport,
         entity: EnergyTokenContract,
     }
-], ConnexPlugin, ThorifyPlugin);
+], ThorifyPlugin);
