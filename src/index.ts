@@ -6,7 +6,5 @@ export * from './core/SolidoTopic';
 
 export * from './decorators';
 export * from './Utils';
-export * from './providers';
 
 export * from './types';
-export * from './providers';
