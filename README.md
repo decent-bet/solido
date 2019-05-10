@@ -2,6 +2,17 @@
 
 Code first contract entity mapper for Solidity based blockchains like Ethereum, Vechain, Tron
 
+## Installing
+
+### Ethereum
+`npm i -S @decent-bet/solido @decent-bet/solido-provider-web3`
+
+### Vechain
+`npm i -S @decent-bet/solido @decent-bet/solido-provider-connex`
+
+### Vechain (server side or mobile)
+`npm i -S @decent-bet/solido @decent-bet/solido-provider-thorify`
+
 ## What is solido
 
 Solido is a contract entity mapper, which annotates a Solidity contract based from its generated ABI. Once a contract is annotated with decorators or auto generated, you can enable it to a blockchain by using a plugin vendor.
@@ -19,11 +30,15 @@ The pluggable architecture allows different scenarios:
 ```typescript
 import {
   SolidoModule,
-  ThorifyPlugin,
-  ThorifyPlugin,
-  ThorifySettings,
-  ConnexPlugin
 } from '@decent-bet/solido';
+import {
+ ConnexPlugin,
+ ConnexSettings,
+} from '@decent-bet/solido-provider-connex';
+import {
+ ThorifyPlugin,
+ ThorifySettings,
+} from '@decent-bet/solido-provider-thorify';
 import { EnergyTokenContract, EnergyContractImport } from './EnergyContract';
 import Web3 from 'web3';
 const { thorify } = require('thorify');
@@ -34,17 +49,17 @@ export const module = new SolidoModule(
     {
       name: 'ConnexToken',
       import: EnergyContractImport,
-      entity: EnergyTokenContract
+      entity: EnergyTokenContract,
+      provider: ConnexPlugin,
     },
     {
       name: 'ThorifyToken',
       import: EnergyContractImport,
       entity: EnergyTokenContract,
-      enableDynamicStubs: true
+      enableDynamicStubs: true,
+      provider: ThorifyPlugin,
     }
   ],
-  ConnexPlugin,
-  ThorifyPlugin
 );
 
 const privateKey = '0x............';
@@ -71,6 +86,8 @@ token.onReady<ThorifySettings>({
 
 ### GetMethod
 
+Returns a function method from a specific provider.
+
 ```typescript
 class MyContractClass {
   @GetMethod({
@@ -87,6 +104,8 @@ console.log(fn);
 
 ### Read
 
+Executes a `call` and returns a response.
+
 ```typescript
 class MyContractClass {
   @Read()
@@ -100,6 +119,11 @@ console.log(balance);
 ```
 
 ### Write
+
+Executes a signing flow, which consists of:
+
+* Prepares signing, eg for Connex displays the signing popup window.
+* Send
 
 ```typescript
 class MyContractClass {
@@ -121,6 +145,8 @@ console.log(tx);
 ```
 
 ### GetEvents
+
+Executes a log event query and returns an array of typed logs.
 
 ```typescript
 class MyContractClass {
@@ -172,7 +198,7 @@ const balance = await token.methods.balanceOf();
 
 ### Dynamic Contract Entities
 
-To let Solido generate Read and Write methods, set `enableDynamicStubs: true` in contract mapping entry and use `GetDynamicContract` to get the contract. The generated stubs are available in `contract.methods`.
+To let Solido generate Read, Write and Event methods, set `enableDynamicStubs: true` in contract mapping entry and use `GetDynamicContract` to get the contract. The generated stubs are available in `contract.methods`.
 
 ```typescript
 export const module = new SolidoModule(
@@ -191,6 +217,8 @@ const contracts = module.bindContracts();
 const token = contracts.getDynamicContract('ThorifyToken');
 
 const balance = await token.methods.balanceOf();
+
+const transferEvent = await token.events.Transfer(); // Returns an event object dependending on provider
 ```
 
 ### Topic Queries
@@ -229,3 +257,11 @@ const subscription = blockConfirmation
     // ... code goes here
   });
 ```
+
+### Plugins
+
+* (Vechain) Connex: [Solido Connex](https://github.com/decent-bet/solido-provider-connex)
+* (Vechain) Thorify: [Solido Thorify](https://github.com/decent-bet/solido-provider-thorify)
+* (Ethereum) Web3: [Solido Web3](https://github.com/decent-bet/solido-provider-web3)
+* Vue/Vuex: [Vuex Solido](https://github.com/decent-bet/vuex-solido)
+* Contract import generator for Truffle: [Connex Entity Builder](https://github.com/decent-bet/connex-entity-builder)
