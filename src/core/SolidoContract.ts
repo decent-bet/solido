@@ -1,4 +1,5 @@
 import { IMethodOrEventCall, EventFilter } from '../types';
+import { ProviderInstance } from './SolidoModule';
 
 
 export interface SolidoSigner {
@@ -55,6 +56,17 @@ export interface SolidoContract {
      * @param settings 
      */
     onReady<T>(settings: T): void;
+
+    /**
+     * Configure provider instance settings for lazy loading
+     * @param settings 
+     */
+    setInstanceOptions(settings: ProviderInstance): void;
+
+    /**
+     * Loads contract previously configured with setInstanceOptions
+     */
+    initialize(): void;
 
     /**
    * get a list of events or logs
