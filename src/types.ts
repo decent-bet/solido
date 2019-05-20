@@ -73,7 +73,8 @@ export interface EventFilterOptions<T> extends EventFilter<T> {
 export enum SolidoProviderType {
     Connex = 'connex',
     Thorify = 'thorify',
-    Web3 = 'web3'
+    Web3 = 'web3',
+    Ethers = 'ethers'
 }
 
 
