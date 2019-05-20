@@ -2,9 +2,6 @@
 
 Code first contract entity mapper for Solidity based blockchains like Ethereum, Vechain, Tron
 
-## Latest version
-
-`1.0.0-beta.4`
 
 ## Installing
 
