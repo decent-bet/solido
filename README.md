@@ -4,7 +4,7 @@ Code first contract entity mapper for Solidity based blockchains like Ethereum, 
 
 ## Latest version
 
-`1.0.0-beta.3`
+`1.0.0-beta.4`
 
 ## Installing
 
