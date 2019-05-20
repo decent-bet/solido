@@ -32,6 +32,9 @@ export interface BindModuleContracts {
     [key: string]: SolidoContract & SolidoProvider;
 }
 
+export interface ConnectedContracts {
+    [key: string]: (SolidoContract & SolidoProvider);
+}
 /**
  * Contract collection stores the contracts
  */
@@ -48,6 +51,19 @@ export class ContractCollection {
     }
     getDynamicContract(key: string): SolidoContract & SolidoProvider {
         return this.coll[key];
+    }
+
+    /**
+     * Connects contracts previously configured in bindContracts
+     */
+    connect(): ConnectedContracts {
+        const contracts = {};
+        Object.keys(this.coll).forEach(i => {
+            const c = (this.coll[i] as  SolidoContract);
+            c.connect();
+            contracts[i] = c;
+        })
+        return contracts;
     }
 }
 

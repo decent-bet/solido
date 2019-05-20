@@ -2,6 +2,10 @@
 
 Code first contract entity mapper for Solidity based blockchains like Ethereum, Vechain, Tron
 
+## Latest version
+
+`1.0.0-beta.3`
+
 ## Installing
 
 ### Ethereum
@@ -83,6 +87,72 @@ token.onReady<ThorifySettings>({
   console.log(balance);
 })();
 ```
+
+### Lazy loading contracts
+```typescript
+// Create Solido Module
+export const module = new SolidoModule(
+  [
+    {
+      name: 'ConnexToken',
+      import: EnergyContractImport,
+      entity: EnergyTokenContract,
+      provider: ConnexPlugin,
+    },
+    {
+      name: 'ThorifyToken',
+      import: EnergyContractImport,
+      entity: EnergyTokenContract,
+      enableDynamicStubs: true,
+      provider: ThorifyPlugin,
+    }
+  ],
+);
+
+const privateKey = '0x............';
+const chainTag = '0x4a';
+const defaultAccount = '0x...........';
+const thorUrl = 'http://localhost:8669';
+
+const thor = thorify(new Web3(), thorUrl);
+
+const contracts = module.bindContracts({
+  'connex': {
+    provider: connex,
+    options: {
+      defaultAccount,
+      chainTag,
+      // ...connex options
+    }
+  },
+  'thorify': {
+    provider: thor,
+    {
+      privateKey,
+      defaultAccount,
+      chainTag      
+    }
+  }
+});
+
+// Get single contract
+const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
+token.connect();
+
+// Get all contracts
+interface MyContracts {
+  ThorifyToken: EnergyTokenContract,
+  ConnexToken: EnergyTokenContract,
+}
+const { ThorifyToken, ConnexToken }: MyContracts = contracts.connect();
+
+(async () => {
+  const balance = await token.balanceOf(defaultAccount);
+  console.log(balance);
+})();
+```
+
+
 
 ### GetMethod
 

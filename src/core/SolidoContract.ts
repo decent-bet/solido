@@ -64,9 +64,9 @@ export interface SolidoContract {
     setInstanceOptions(settings: ProviderInstance): void;
 
     /**
-     * Loads contract previously configured with setInstanceOptions
+     * Connects contract previously configured with setInstanceOptions
      */
-    initialize(): void;
+    connect(): void;
 
     /**
    * get a list of events or logs
