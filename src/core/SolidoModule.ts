@@ -11,6 +11,15 @@ function applyMixins(derivedCtor: any, baseCtors: any[]) {
     });
 }
 
+export interface ProviderInstance {
+    provider: any;
+    options: any;
+}
+
+export interface ProviderInstances {
+    [key: string]: ProviderInstance;
+}
+
 export interface ContractProviderMapping {
     name: string;
     import: ContractImport;
@@ -23,11 +32,15 @@ export interface BindModuleContracts {
     [key: string]: SolidoContract & SolidoProvider;
 }
 
+export interface ConnectedContracts {
+    [key: string]: (SolidoContract & SolidoProvider);
+}
 /**
  * Contract collection stores the contracts
  */
 export class ContractCollection {
     private coll: BindModuleContracts = {};
+    
     add(key: string, c: SolidoContract & SolidoProvider) {
         this.coll[key] = c;
     }
@@ -39,6 +52,19 @@ export class ContractCollection {
     getDynamicContract(key: string): SolidoContract & SolidoProvider {
         return this.coll[key];
     }
+
+    /**
+     * Connects contracts previously configured in bindContracts
+     */
+    connect(): ConnectedContracts {
+        const contracts = {};
+        Object.keys(this.coll).forEach(i => {
+            const c = (this.coll[i] as  SolidoContract);
+            c.connect();
+            contracts[i] = c;
+        })
+        return contracts;
+    }
 }
 
 class Empty {}
@@ -48,7 +74,7 @@ export class SolidoModule {
         this.providers = providers;
     }
 
-    bindContracts(): ContractCollection {
+    bindContracts(setupOptions?: ProviderInstances): ContractCollection {
         const coll = new ContractCollection();
 
         // if one contract mapping exists
@@ -61,21 +87,28 @@ export class SolidoModule {
                 if (!name) {
                     throw new Error('Must have a name for short module syntax');
                 }
-                this.bindContract(provider, c, coll, true);
-            })
-            return coll;
+                this.bindContract(provider, c, coll, true, setupOptions);
+            })            
+        } else {
+            this.contractMappings.map((c) => {      
+                let provider = c.provider;
+                this.bindContract(provider, c, coll, false, setupOptions);
+            });
         }
 
-
-        this.contractMappings.map((c) => {      
-            let provider = c.provider;
-            this.bindContract(provider, c, coll);
-        });
         return coll;
     }
 
 
-    private bindContract(provider: any, c: ContractProviderMapping, collection: ContractCollection, generateName?: boolean) {
+    /**
+     * Binds and configures a contract
+     * @param provider Plugin provider type
+     * @param c Contract mapping
+     * @param collection Contract collection
+     * @param generateName If true, generates a name
+     * @param setupOptions Provider instance config
+     */
+    private bindContract(provider: any, c: ContractProviderMapping, collection: ContractCollection, generateName: boolean, setupOptions?: ProviderInstances) {
         if (!provider) {
             throw new Error(`Missing provider for ${c.name}`);
         }
@@ -104,10 +137,20 @@ export class SolidoModule {
         }
 
         let name = c.name;
+        const providerKeyName = instance.getProviderType();
+        const providerName = SolidoProviderType[providerKeyName];
         if (generateName) {
-            const providerName = SolidoProviderType[instance.getProviderType()];
             name = `${providerName}${c.name}`;            
         }
-        collection.add(name, instance as SolidoContract & SolidoProvider);
+        const contract = instance as SolidoContract & SolidoProvider;
+        collection.add(name, contract);
+
+        if (setupOptions) {
+            // find provider instance options
+            const instanceOptions = setupOptions[providerKeyName];
+            if (instanceOptions) {
+                contract.setInstanceOptions(instanceOptions);
+            }
+        }
     }
 }

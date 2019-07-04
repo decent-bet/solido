@@ -2,12 +2,17 @@
 
 Code first contract entity mapper for Solidity based blockchains like Ethereum, Vechain, Tron
 
+
+## Latest version
+
+`1.0.0`
+
 ## Installing
 
 ### Ethereum
 `npm i -S @decent-bet/solido @decent-bet/solido-provider-web3`
 
-### Vechain
+### Vechain (Connex Framework)
 `npm i -S @decent-bet/solido @decent-bet/solido-provider-connex`
 
 ### Vechain (server side or mobile)
@@ -28,6 +33,9 @@ The pluggable architecture allows different scenarios:
 ### Setup:
 
 ```typescript
+import { Framework } from '@vechain/connex-framework';
+import { DriverNodeJS } from '@vechain/connex.driver-nodejs';
+
 import {
   SolidoModule,
 } from '@decent-bet/solido';
@@ -83,6 +91,79 @@ token.onReady<ThorifySettings>({
   console.log(balance);
 })();
 ```
+
+### Lazy loading contracts
+```typescript
+// Create Solido Module
+export const module = new SolidoModule(
+  [
+    {
+      name: 'ConnexToken',
+      import: EnergyContractImport,
+      entity: EnergyTokenContract,
+      provider: ConnexPlugin,
+    },
+    {
+      name: 'ThorifyToken',
+      import: EnergyContractImport,
+      entity: EnergyTokenContract,
+      enableDynamicStubs: true,
+      provider: ThorifyPlugin,
+    }
+  ],
+);
+
+const privateKey = '0x............';
+const chainTag = '0x4a';
+const defaultAccount = '0x...........';
+const thorUrl = 'http://localhost:8669';
+
+// thorify
+const thor = thorify(new Web3(), thorUrl);
+
+// connex framework node driver
+const driver = await DriverNodeJS.connect(thorUrl);
+const connex = new Framework(driver);
+const { wallet } = driver;
+wallet.add(PRIVATE_KEY);
+
+const contracts = module.bindContracts({
+  'connex': {
+    provider: connex,
+    options: {
+      defaultAccount,
+      chainTag,
+      // ...connex options
+    }
+  },
+  'thorify': {
+    provider: thor,
+    {
+      privateKey,
+      defaultAccount,
+      chainTag      
+    }
+  }
+});
+
+// Get single contract
+const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
+token.connect();
+
+// Get all contracts
+interface MyContracts {
+  ThorifyToken: EnergyTokenContract,
+  ConnexToken: EnergyTokenContract,
+}
+const { ThorifyToken, ConnexToken }: MyContracts = contracts.connect();
+
+(async () => {
+  const balance = await token.balanceOf(defaultAccount);
+  console.log(balance);
+})();
+```
+
+
 
 ### GetMethod
 
