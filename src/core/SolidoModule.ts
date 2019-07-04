@@ -137,7 +137,8 @@ export class SolidoModule {
         }
 
         let name = c.name;
-        const providerName = SolidoProviderType[instance.getProviderType()];
+        const providerKeyName = instance.getProviderType();
+        const providerName = SolidoProviderType[providerKeyName];
         if (generateName) {
             name = `${providerName}${c.name}`;            
         }
@@ -146,7 +147,7 @@ export class SolidoModule {
 
         if (setupOptions) {
             // find provider instance options
-            const instanceOptions = setupOptions[providerName];
+            const instanceOptions = setupOptions[providerKeyName];
             if (instanceOptions) {
                 contract.setInstanceOptions(instanceOptions);
             }
