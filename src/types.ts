@@ -22,6 +22,12 @@ export interface IMethodOrEventCall {
     validations?: IValidationParams;
 }
 
+export interface IMethodConfig {
+    gas?: number;
+    from?: string;
+    gasPriceCoef?: number; 
+}
+
 export interface IEventFilter {
     name?: string;
     interval?: number | null;
