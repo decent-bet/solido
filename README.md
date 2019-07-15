@@ -221,11 +221,13 @@ class MyContractClass {
 const tx = await myContractClassInstance.transferMethod(
   '0x........',
   new BigNumber(1 ** 6)
-).call();
+).request({
+  gas: 500_000
+});
 console.log(tx);
 ```
 
-`call` accepts an object with:
+`request` accepts an object with:
 
 * `gas`: Gas limit
 * `gasPriceCoef`: Gas price coefficient

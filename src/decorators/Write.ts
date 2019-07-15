@@ -4,6 +4,22 @@ import { SolidoContract } from '../core/SolidoContract';
 
 export function _Write(name: string, contract: SolidoContract, args: any[], options: IMethodOrEventCall = {}) {
     return {
+        // to avoid conflicts with pure javascript clients
+        request: async (config: IMethodConfig) => {
+            if (!config) throw new Error('Missing tx config');
+            // Validate
+            if (options.validations) {
+                validate(options.validations, args);
+            }
+
+            // Get Method
+            const func = contract.getMethod(options.name || name);
+
+            const signer = await contract.prepareSigning(func, Object.assign({}, options, config), args);
+
+            return signer.requestSigning();
+        },        
+        // overrides javascript call
         call: async (config: IMethodConfig = {}) => {
             // Validate
             if (options.validations) {
