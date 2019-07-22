@@ -102,16 +102,16 @@ export const module = new SolidoModule(
       import: EnergyContractImport,
       entity: EnergyTokenContract,
       provider: ConnexPlugin,
-    },
-    {
-      name: 'ThorifyToken',
-      import: EnergyContractImport,
-      entity: EnergyTokenContract,
-      enableDynamicStubs: true,
-      provider: ThorifyPlugin,
     }
   ],
 );
+
+module.addContractMapping({
+      name: 'ThorifyToken',
+      import: EnergyContractImport,
+      enableDynamicStubs: true,
+      provider: ThorifyPlugin,
+});
 
 const privateKey = '0x............';
 const chainTag = '0x4a';
@@ -145,6 +145,16 @@ const contracts = module.bindContracts({
     }
   }
 });
+
+// Add new contract and rebind 
+module.addContractMapping({
+      name: 'AstronautToken',
+      import: AstronautToken,
+      enableDynamicStubs: true,
+      provider: ConnexPlugin,
+});
+
+module.rebind();
 
 // Get single contract
 const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
