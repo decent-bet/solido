@@ -2,20 +2,34 @@ import { validate } from './Utils';
 import { IMethodOrEventCall, IMethodConfig } from '../types';
 import { SolidoContract } from '../core/SolidoContract';
 
-export async function _Write(name: string, contract: SolidoContract, args: any[], options: IMethodOrEventCall = {}) {
+export function _Write(name: string, contract: SolidoContract, args: any[], options: IMethodOrEventCall = {}) {
     return {
-        call: async (config: IMethodConfig = {}) => {
-
-            const cfg = Object.assign({}, options, config);
+        // to avoid conflicts with pure javascript clients
+        request: async (config: IMethodConfig) => {
+            if (!config) throw new Error('Missing tx config');
             // Validate
-            if (cfg.validations) {
-                validate(cfg.validations, args);
+            if (options.validations) {
+                validate(options.validations, args);
             }
 
             // Get Method
-            const func = contract.getMethod(cfg.name || name);
+            const func = contract.getMethod(options.name || name);
 
-            const signer = await contract.prepareSigning(func, cfg, args);
+            const signer = await contract.prepareSigning(func, Object.assign({}, options, config), args);
+
+            return signer.requestSigning();
+        },        
+        // overrides javascript call
+        call: async (config: IMethodConfig = {}) => {
+            // Validate
+            if (options.validations) {
+                validate(options.validations, args);
+            }
+
+            // Get Method
+            const func = contract.getMethod(options.name || name);
+
+            const signer = await contract.prepareSigning(func, Object.assign({}, options, config), args);
 
             return signer.requestSigning();
         }
@@ -28,10 +42,8 @@ export async function _Write(name: string, contract: SolidoContract, args: any[]
 export function Write(options: IMethodOrEventCall = {}) {
     return (target: any, propertyKey: string) => {
 
-        const write = async function (...args: any[]) {
-            return {
-                call: (config: IMethodConfig = {}) => _Write(propertyKey, this, args, Object.assign({}, options, config))
-            }
+        const write = function (...args: any[]) {
+            return _Write(propertyKey, this, args, options);
         };
 
         Object.defineProperty(target, propertyKey, {

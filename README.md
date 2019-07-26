@@ -5,7 +5,7 @@ Code first contract entity mapper for Solidity based blockchains like Ethereum, 
 
 ## Latest version
 
-`1.1.0`
+`1.1.3`
 
 ## Installing
 
@@ -102,16 +102,16 @@ export const module = new SolidoModule(
       import: EnergyContractImport,
       entity: EnergyTokenContract,
       provider: ConnexPlugin,
-    },
-    {
-      name: 'ThorifyToken',
-      import: EnergyContractImport,
-      entity: EnergyTokenContract,
-      enableDynamicStubs: true,
-      provider: ThorifyPlugin,
     }
   ],
 );
+
+module.addContractMapping({
+      name: 'ThorifyToken',
+      import: EnergyContractImport,
+      enableDynamicStubs: true,
+      provider: ThorifyPlugin,
+});
 
 const privateKey = '0x............';
 const chainTag = '0x4a';
@@ -145,6 +145,16 @@ const contracts = module.bindContracts({
     }
   }
 });
+
+// Add new contract and rebind 
+module.addContractMapping({
+      name: 'AstronautToken',
+      import: AstronautToken,
+      enableDynamicStubs: true,
+      provider: ConnexPlugin,
+});
+
+module.rebind();
 
 // Get single contract
 const token = contracts.getContract<EnergyTokenContract>('ThorifyToken');
@@ -221,11 +231,13 @@ class MyContractClass {
 const tx = await myContractClassInstance.transferMethod(
   '0x........',
   new BigNumber(1 ** 6)
-).call();
+).request({
+  gas: 500_000
+});
 console.log(tx);
 ```
 
-`call` accepts an object with:
+`request` accepts an object with:
 
 * `gas`: Gas limit
 * `gasPriceCoef`: Gas price coefficient
