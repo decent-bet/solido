@@ -1,4 +1,4 @@
-import { ContractImport, SolidoProviderType, IMethodConfig } from '../types';
+import { ContractImport, SolidoProviderType } from '../types';
 import { TopicSignature } from './TopicSignature';
 import { _Read, _Write, _GetEvent } from '../decorators';
 
@@ -31,10 +31,9 @@ export abstract class SolidoProvider {
                     };
                 }
                 if (definition.type === 'function' && definition.stateMutability === 'nonpayable') {
-                    const fn = (...req: any[]) => { return { call: (config?: IMethodConfig) => _Write(definition.name, contract, req, Object.assign({}, config)) } };
                     this.methods = {
                         ...this.methods,
-                        [definition.name]: fn
+                        [definition.name]: (...req: any[]) => _Write(definition.name, contract, req, {})
                     };
                 }
                 if (definition.type === 'event') {
