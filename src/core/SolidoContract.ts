@@ -15,6 +15,11 @@ export interface SolidoContract {
     defaultAccount: string;
 
     /**
+     * Describes a contract chain tag, address and owner
+     */
+    describe(): string;
+
+    /**
      * Prepares signing
      * @param methodCall 
      * @param options 
