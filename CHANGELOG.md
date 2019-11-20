@@ -1,5 +1,7 @@
 ## Changelog
 
+### 1.1.5
+* Support for Vyper ABIs
 
 ### 1.1.3
 

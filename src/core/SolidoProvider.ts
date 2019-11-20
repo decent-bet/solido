@@ -24,13 +24,17 @@ export abstract class SolidoProvider {
             this.events = {};
             // Add Read, Writes
             this.abi.forEach(definition => {
-                if (definition.type === 'function' && definition.stateMutability === 'view') {
+                if (definition.type === 'function' && (
+                    definition.stateMutability === 'view' ||
+                    definition.constant)) {
                     this.methods = {
                         ...this.methods,
                         [definition.name]: (...req: any[]) => _Read(definition.name, contract, req, {})
                     };
                 }
-                if (definition.type === 'function' && definition.stateMutability === 'nonpayable') {
+                if (definition.type === 'function' && (
+                    definition.stateMutability === 'nonpayable' ||
+                    !definition.constant)) {
                     this.methods = {
                         ...this.methods,
                         [definition.name]: (...req: any[]) => _Write(definition.name, contract, req, {})
