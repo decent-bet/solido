@@ -23,7 +23,7 @@ export interface IMethodOrEventCall {
 }
 
 export interface IMethodConfig {
-    gas?: number;
+    gas?: number | string;
     from?: string;
     gasPriceCoef?: number; 
 }
