@@ -239,7 +239,7 @@ console.log(tx);
 
 `request` accepts an object with:
 
-* `gas`: Gas limit
+* `gas`: Gas limit, either a number value or 'auto' which will use a gas estimation
 * `gasPriceCoef`: Gas price coefficient
 * `from`: From address
 
